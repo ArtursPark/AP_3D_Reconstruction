@@ -1,0 +1,20 @@
+{
+    "python.formatting.provider": "black",
+    "files.exclude": {
+        "**/__pycache__": true
+    },
+    "cSpell.words": [
+		"Cyrill",
+		"FLANN",
+		"Stachniss",
+		"struct",
+		"Szeliski",
+		"YOLO",
+		"yolov",
+		"Zhang's",
+		"Zhangs"
+	],
+	"files.associations": {
+		"*.txt": "plaintext"
+	}
+}

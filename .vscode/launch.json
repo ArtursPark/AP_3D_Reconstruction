@@ -1,0 +1,51 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "./main.py calibrate",
+      "type": "python",
+      "request": "launch",
+      "console": "externalTerminal",
+      "program": "main.py",
+      "args": ["calibrate"]
+    },
+    {
+      "name": "calibration/main.py",
+      "type": "python",
+      "request": "launch",
+      "console": "externalTerminal",
+      "program": "calibration/main.py"
+    },
+    {
+      "name": "./main.py reconstruction",
+      "type": "python",
+      "request": "launch",
+      "program": "main.py",
+      "console": "externalTerminal",
+      "args": ["reconstruction"]
+    },
+	{
+	  "name": "./main.py reconstruction -stream IMAGE -path data/input/sample_images -d ON -r ON",
+	  "type": "python",
+	  "request": "launch",
+	  "program": "main.py",
+	  "console": "externalTerminal",
+	  "args": ["reconstruction", "--stream", "IMAGE", "--path", "data/input/sample_images", "-d", "ON", "-r", "ON"]
+	},
+    {
+      "name": "./main.py video_to_images",
+      "type": "python",
+      "request": "launch",
+      "program": "main.py",
+      "console": "externalTerminal",
+      "args": ["video_to_images"]
+    },
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    }
+  ]
+}

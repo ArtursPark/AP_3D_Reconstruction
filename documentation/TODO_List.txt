@@ -1,0 +1,49 @@
+In Progress TODO List :
+
+	# TODO : Implement local bundle adjustment for 2 view SfM.
+
+Prioritized TODO List :
+
+	# TODO : Extend 2 view SfM , to N view SfM.
+
+3D Reconstruction Backlog TODO List :
+
+	# TODO : The reconstructed data looks a bit skewed, needs to be investigated.
+
+	# TODO : Need to validate if the frame, and reconstructed data is going to be useful, if not then discarded.
+		# Note : In paper https://arxiv.org/abs/2003.08583 , they use base line angle between the cameras to determine a view selection score.
+
+	# TODO : Consider adding specific object detection + localization (example face, hands, apple) to improve reconstruction 
+
+	# TODO : Consider adding object pose estimation. Example, if face orientation is known, we can re-align the points.
+	
+	# TODO : Implement global bundle adjustment.
+	
+	# TODO : Add outlier filtering.
+
+General App Backlog TODO List :
+
+*New
+
+	# TODO : Add a display argument to the calibration command.
+	# TODO : Add a display refresh delay argument to the calibration command.
+	# TODO : Add logging.
+	# TODO : Implement argument validation.
+	# TODO : Add basic GUI control.
+	# TODO : Add unit tests. (There is a lot of it to do, so better start soon.)
+		1. Commands.
+		2. Arguments.
+
+	# TODO : Allow the user to save generated data from the reconstruction.
+	# TODO : Create a requirements.txt file.
+
+*Improvements	
+	
+	# TODO : Improve the reconstruction 3D plot.
+	# TODO : Create a abstract config, and let utility apps inherit it.
+	# TODO : Split Zhang's method implementation into a separate class, to inherit from a virtual calibration class.
+	# TODO : Wrap calibration_arguments.py into a class.
+	# TODO : Move input_stream to common code.
+	# TODO : Create an abstract class for the argument, and create an argument class for each option. Example, CalibrationPathArg inheriting from ArgumentInterface. A lot of arguments can be re-used (Example paths, image names, etc...). Note : This has been partially done, but needs to be expended.
+	# TODO : Simplify display arguments ON/OFF enums are not required, it just added complexity, switch to simple boolean common argument.
+	# TODO : Replace dict switches with new switch cases from python 3.10.
