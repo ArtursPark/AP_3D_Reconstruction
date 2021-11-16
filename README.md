@@ -19,15 +19,19 @@ Section 2 : Requirements
 Section 3 : How-To Step by Step
 
     Step 0 : Clone the repo.
-    	git clone ...
+    	"git clone https://github.com/ArtursPark/AP_3D_Reconstruction.git"
 
     Step 1 : Calibrate your camera.
     	i : Print the chessboard and tape it onto a hard surface.
     	ii : Take a few images of the chessboard from various angles.
     	iii : Run the calibration app to obtain a file containing intrinsic matrix and distortion coefficients.
 
+		"python path/to/repo/AP_3D_Reconstruction/ calibrate"
+
     Step 2 : Perform 3D reconstruction.
     	i : Run the reconstruction against the input stream, plus calibration data obtained from the previous step.
+		
+		"python path/to/repo/AP_3D_Reconstruction/ reconstruction -stream IMAGE -path data/input/sample_images -d ON -r ON"
 
 Section 4 : App Documentations
 
