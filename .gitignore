@@ -1,10 +1,3 @@
-# Project
-*.h5
-*.jpg
-*.mp4
-*.avi
-*.png
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
