@@ -44,6 +44,4 @@ General App Backlog TODO List :
 	# TODO : Split Zhang's method implementation into a separate class, to inherit from a virtual calibration class.
 	# TODO : Wrap calibration_arguments.py into a class.
 	# TODO : Move input_stream to common code.
-	# TODO : Create an abstract class for the argument, and create an argument class for each option. Example, CalibrationPathArg inheriting from ArgumentInterface. A lot of arguments can be re-used (Example paths, image names, etc...). Note : This has been partially done, but needs to be expended.
-	# TODO : Simplify display arguments ON/OFF enums are not required, it just added complexity, switch to simple boolean common argument.
 	# TODO : Replace dict switches with new switch cases from python 3.10.

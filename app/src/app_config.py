@@ -4,7 +4,7 @@ import os
 class Config:
 	"""
 	Singleton : Config class.
-		This class will contain values, that are mainly static, and app wide with lifetime of the app.
+			This class will contain values, that are mainly static, and app wide with lifetime of the app.
 	"""
 
 	# 	# Public global member variables.
@@ -39,6 +39,16 @@ class Config:
 		else:
 			Config.__m_instance = self
 
+	# 	# Public member methods.
+	def app_name(self):
+		return Config.G_APP_NAME
+
+	def app_description(self):
+		return Config.G_APP_DESCRIPTION
+
+	def project_path(self):
+		return Config.G_APP_PROJECT_PATH
+
 	# 	# Static member methods.
 	@staticmethod
 	def instance():
@@ -46,3 +56,5 @@ class Config:
 		if Config.__m_instance == None:
 			Config()
 		return Config.__m_instance
+
+

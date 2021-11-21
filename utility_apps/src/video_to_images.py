@@ -6,104 +6,84 @@
 
 from input_stream.src import video_stream
 
+from ap_vision.src.arguments.argument_list_interface import ArgumentListInterface
+from ap_vision.src.arguments.argument_parser import ArgumentParser
+
+from ap_vision.src.arguments.path_argument import PathArgument
+from ap_vision.src.arguments.file_name_argument import FileNameArgument
+from ap_vision.src.arguments.file_type_argument import FileTypeArgument
+from ap_vision.src.arguments.output_argument import OutputArgument
+
 import cv2
 
-import argparse
 import os
 
-class V2IsConfig:
-	# 	# Public global member variables.
-	# App details.
-	G_CONST_APP_NAME : str = ""
-	G_CONST_APP_DESCRIPTION : str = ""
-	G_CONST_APP_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
-	# App argument details.
-	G_ARGUMENT_VIDEO_PATH: str = ""
-	G_CONST_ARGUMENT_VIDEO_PATH: str = "data/input/sample_video.mp4"
-	G_CONST_HELP_VIDEO_PATH: str = ""
+class VideoToImagesArgumentList(ArgumentListInterface):
+    
+	# 	# Python member method overides.
+	def __init__(self, in_config):
+		super().__init__(
+			[
+				PathArgument(
+					os.path.join(in_config.project_path(), "./data/input/sample_video.mp4")
+				),
+				FileNameArgument(),
+				FileTypeArgument(),
+				OutputArgument(os.path.join(in_config.project_path(), "./data/output/sample_video/")),
+			]
+		)
 
-	G_ARGUMENT_IMAGE_NAME: str = ""
-	G_CONST_ARGUMENT_IMAGE_NAME: str = "sample_image_"
-	G_CONST_HELP_IMAGE_NAME: str = ""
+class VideoToImagesCommand():
+    
+	# 	# Static member methods.
+	def run(in_video_path, in_file_name, in_file_type, in_output):
+		input_video_path = os.path.join(in_video_path)
+		video_stream_handle = video_stream.VideoStream(input_video_path)
 
-	G_ARGUMENT_IMAGE_FILE_TYPE_SUFFIX: str = ""
-	G_CONST_ARGUMENT_IMAGE_FILE_TYPE_SUFFIX: str = "jpg"
-	G_CONST_HELP_IMAGE_FILE_TYPE_SUFFIX: str = ""
+		if video_stream_handle is None:
+			print("ERROR : Could not open the video, to path = \"" + input_video_path + "\".")
+			return
 
-	G_ARGUMENT_OUTPUT_DIR: str = ""
-	G_CONST_ARGUMENT_OUTPUT_DIR: str = "data/output/sample_video/"
-	G_CONST_HELP_OUTPUT_DIR: str = ""
+		if not os.path.exists(in_output):
+			print("WARNING : Path to output directory does not exist, creating the path = \"" + in_output + "\".")
+			os.makedirs(in_output)
+		
+		count : int = 0
+		while True:
+			frame = video_stream_handle.read()
+			if frame is None:
+				print("STATUS : Frame could not be read, exiting.")
+				break
 
+			path = os.path.join(in_output, in_file_name + str(count) + "." + in_file_type)
+			cv2.imwrite(path, frame)
+			count += 1
+   
+	def main(in_config, in_argv):
+			print("Status : Start converting video to images.")
 
-def argument_parser(in_argument_values):
-	parser = argparse.ArgumentParser(
-		prog=V2IsConfig.G_CONST_APP_NAME,
-		description=V2IsConfig.G_CONST_APP_DESCRIPTION,
-	)
+			arg_dict = ArgumentParser(
+				in_config, VideoToImagesArgumentList(in_config), in_argv
+			).argument_dictionary
 
-	parser.add_argument(
-		"-p",
-		"--path",
-		default=V2IsConfig.G_CONST_ARGUMENT_VIDEO_PATH,
-		type=str,
-		help=V2IsConfig.G_CONST_HELP_VIDEO_PATH,
-	)
+			path = None
+			if "path" in arg_dict.keys():
+				path = arg_dict["path"]
+    
+			name = None
+			if "name" in arg_dict.keys():
+				name = arg_dict["name"]
 
-	parser.add_argument(
-		"-i",
-		"--image_name",
-		default=V2IsConfig.G_CONST_ARGUMENT_IMAGE_NAME,
-		type=str,
-		help=V2IsConfig.G_CONST_HELP_IMAGE_NAME,
-	)
+			type = None
+			if "type" in arg_dict.keys():
+				type = arg_dict["type"]
 
-	parser.add_argument(
-		"-t",
-		"--image_file_type",
-		default=V2IsConfig.G_CONST_ARGUMENT_IMAGE_FILE_TYPE_SUFFIX,
-		type=str,
-		help=V2IsConfig.G_CONST_HELP_IMAGE_FILE_TYPE_SUFFIX,
-	)
+			output = None
+			if "output" in arg_dict.keys():
+				output = arg_dict["output"]
 
-	parser.add_argument(
-		"-o",
-		"--output",
-		default=V2IsConfig.G_CONST_ARGUMENT_OUTPUT_DIR,
-		type=str,
-		help=V2IsConfig.G_CONST_HELP_OUTPUT_DIR,
-	)
+			VideoToImagesCommand.run(path, name, type, output)
 
-	arguments = parser.parse_args(in_argument_values)
+			print("Status : End converting video to images.")
 
-	V2IsConfig.G_ARGUMENT_VIDEO_PATH = arguments.path
-	V2IsConfig.G_ARGUMENT_IMAGE_NAME = arguments.image_name
-	V2IsConfig.G_ARGUMENT_IMAGE_FILE_TYPE_SUFFIX = arguments.image_file_type
-	V2IsConfig.G_ARGUMENT_OUTPUT_DIR = arguments.output
-
-
-def main(argv):
-
-	argument_parser(argv)
-
-	vpath = os.path.join(V2IsConfig.G_CONST_APP_PROJECT_PATH, V2IsConfig.G_ARGUMENT_VIDEO_PATH)
-	vstream = video_stream.VideoStream(vpath)
-
-	if vstream is None:
-		print("ERROR : Could not open the video, to path = \"" + vpath + "\".")
-		return
-
-	if not os.path.exists(V2IsConfig.G_ARGUMENT_OUTPUT_DIR):
-		print("WARNING : Path to output directory does not exist, creating the path = \"" + V2IsConfig.G_ARGUMENT_OUTPUT_DIR + "\".")
-		os.makedirs(V2IsConfig.G_ARGUMENT_OUTPUT_DIR)
-	
-	count : int = 0
-	while True:
-		frame = vstream.read()
-		if frame is None:
-			print("STATUS : Frame could not be read, exiting.")
-			break
-
-		path = os.path.join(V2IsConfig.G_ARGUMENT_OUTPUT_DIR, V2IsConfig.G_ARGUMENT_IMAGE_NAME + str(count) + "." + V2IsConfig.G_ARGUMENT_IMAGE_FILE_TYPE_SUFFIX)
-		cv2.imwrite(path, frame)
-		count += 1
