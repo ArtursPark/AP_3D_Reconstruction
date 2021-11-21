@@ -1,0 +1,6 @@
+Changes :
+	1. Merge of personal notes.
+	2. Arguments are combined into proper classes.
+	3. Some arguments got common short versions, this has been fixed.
+	
+	

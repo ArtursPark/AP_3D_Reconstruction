@@ -12,6 +12,7 @@ class Calibration:
 			Implemented using Zhang's method with OpenCV.
 	"""
 
+    # 	# Python member method overides.
 	def __init__(
 		self,
 		in_image_dir_path: str,
@@ -35,8 +36,8 @@ class Calibration:
 		self.__m_output_path: str = in_output_path
 		self.__m_display_windows : bool = in_display_windows
 
-	#   # Public methods.
-	def run_calibration(self):
+    # 	# Public member methods.
+	def compute(self):
 
 		# Set up windows
 		cv2.namedWindow("Original Image", cv2.WINDOW_NORMAL)

@@ -31,7 +31,7 @@ Section 3 : How-To Step by Step
     Step 2 : Perform 3D reconstruction.
     	i : Run the reconstruction against the input stream, plus calibration data obtained from the previous step.
 		
-		"python path/to/repo/AP_3D_Reconstruction/ reconstruction -stream IMAGE -path data/input/sample_images -d ON -r ON"
+		"python path/to/repo/AP_3D_Reconstruction/ reconstruction -stream IMAGE -path data/input/sample_images -d -k "
 
 Section 4 : App Documentations
 
@@ -40,10 +40,10 @@ Section 4 : App Documentations
     		Arguments : Path, Stream, Calibration, Display Stream, Display Reconstruction.
 
     	2. [calibrate] :
-    		Arguments : Path, Image File Type, Square Size, Rows, Columns, Output.
+    		Arguments : Path, File Type, Square Size, Rows, Columns, Output.
 
     	3. [video_to_images] :
-    		Arguments : Path, Image Name, Image File Type, Output.
+    		Arguments : Path, File Name, File Type, Output.
 
     Arguments :
     	1. Path [-p, --path] :
@@ -57,13 +57,13 @@ Section 4 : App Documentations
     		Values : "IMAGE", "VIDEO", "CAMERA".
     		Default : "CAMERA".
 
-    	3. Image Name [-i, --image_name] :
+    	3. File Name [-n, --name] :
     		Description :
     			Name of the image files. Example "my_cool_image_name.jpg", "my_cool_image_name" would be considered an image name.
     		Values : str
     		Default : ""
 
-    	4. Image File Type [-t, --image_file_type] :
+    	4. File Type [-t, --type] :
     		Description :
     			Name of the file extension on Windows. Example from Image Name argument, "jpg", would be considered an image file type.
     		Values : str
@@ -74,22 +74,20 @@ Section 4 : App Documentations
     		Values : str
     		Default : "./data/output/output.txt" or "./data/output/"
 
-    	6. Calibration [-c, --calibration] : Path to the calibration file.
+    	6. Calibration [-a, --calibration] : Path to the calibration file.
     		Description :
     		Values : str
     		Default : "./calibration/data/output/output.txt"
 
     	7. Display Stream [-d, --display_stream] :
     		Description :
-    		Values : "ON", "OFF".
-    		Default : "OFF".
+    		Default : false.
 
-    	8. Display Reconstruction [-d, --display_reconstruction] :
+    	8. Display Reconstruction [-k, --display_reconstruction] :
     		Description :
-    		Values : "ON", "OFF".
-    		Default : "OFF".
+    		Default : false.
 
-    	9. Square Size [-s, --square_size] :
+    	9. Square Size [-z, --square_size] :
     		Description : Size of the square in the chessboard.
     		Values : float
     		Default : 0.0027
@@ -108,23 +106,24 @@ Section 5 : Computer Vision Topic Documentations
 
     I have posted my personal notes as pdf files, going over many relevant topics. This includes camera calibration, features, triangulation, etc. .
 
-    git/documentation/my_notes/*.pdf
+    	"git/documentation/my_notes/*.pdf"
 
 Section 6 : TODO Items
 
     This is a list of todo items to keep track of, as well as add anything I can think of, hence its a long list.
-
-    git/documentation/TODO_List.txt
+    	
+		"git/documentation/TODO_List.txt"
+		"git/documentation/changes/ticket_*.txt"
 
 Section 7 : References
 
     This contains a list of my readings (opinions on them), and learning resources I have used and am currently using.
 
-    git/documentation/references.txt
+    	"git/documentation/references.txt"
 
     Certain papers of interest are in "git/documentation/papers/*.pdf".
 
 Section 8 : Contact Me
 
-    Please, email me at arturspark1995@gmail.com.
+    Please, email me at "arturspark1995@gmail.com."
     Thank you.

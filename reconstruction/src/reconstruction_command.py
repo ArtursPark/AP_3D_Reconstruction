@@ -1,40 +1,39 @@
-from reconstruction.src import reconstruction
+from reconstruction.src.reconstruction import Reconstruction
+from reconstruction.src.reconstruction_argument_list import ReconstructionArgumentList
 
-from input_stream.src import video_stream
-from input_stream.src import frame_stream
-from input_stream.src import camera_stream
+from input_stream.src.video_stream import VideoStream
+from input_stream.src.frame_stream import FrameStream
+from input_stream.src.camera_stream import CameraStream
 
-from input_stream.src import enum_input_stream
-from reconstruction.src import enum_reconstruction
-from reconstruction.src import reconstruction_arguments
+from ap_vision.src.arguments.argument_parser import ArgumentParser
+from ap_vision.src.arguments.input_stream_argument import EnumInputStream
+
 
 class ReconstructionCommand:
-	def main(argv):
-		print("Status : Start reconstruction.")
+    def main(in_config, in_argv):
+        print("Status : Start reconstruction.")
 
-		arg_dict = reconstruction_arguments.ArgumentParser(argv).argument_dictionary
+        arg_dict = ArgumentParser(
+            in_config, ReconstructionArgumentList(in_config), in_argv
+        ).argument_dictionary
 
-		path = arg_dict["path"]
+        path = arg_dict["path"]
 
-		stream = None
-		if arg_dict["stream"] is enum_input_stream.EnumInputStream.E_VIDEO_STREAM:
-			stream = video_stream.VideoStream(path)
-		elif arg_dict["stream"] is enum_input_stream.EnumInputStream.E_FRAME_STREAM:
-			stream = frame_stream.FrameStream(path)
-		else:
-			stream = camera_stream.CameraStream()
+        stream = None
+        if arg_dict["stream"] is EnumInputStream.E_VIDEO_STREAM:
+            stream = VideoStream(path)
+        elif arg_dict["stream"] is EnumInputStream.E_FRAME_STREAM:
+            stream = FrameStream(path)
+        else:
+            stream = CameraStream()
 
-		calibration = arg_dict["calibration"]
+        calibration = arg_dict["calibration"]
+        display_stream = arg_dict["display_stream"]
+        display_reconstruction = arg_dict["display_reconstruction"]
 
-		display_stream = False
-		if enum_input_stream.EnumStreamDisplay.E_ON == arg_dict["display_stream"]:
-			display_stream = True
+        reconstruction = Reconstruction(
+            stream, calibration, display_stream, display_reconstruction
+        )
+        reconstruction.compute()
 
-		display_reconstruction = False
-		if enum_reconstruction.EnumReconstructionPlotDisplay.E_ON == arg_dict["display_reconstruction"]:
-			display_reconstruction = True	
-
-		Reconstruction = reconstruction.Reconstruction(stream, calibration, display_stream, display_reconstruction)
-		Reconstruction.compute()
-
-		print("Status : End reconstruction.")
+        print("Status : End reconstruction.")

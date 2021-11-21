@@ -1,8 +1,10 @@
 #   # Add current project modules.
 import sys, os
 
-# AP Vision common lib path.
+# Add common packages.
 sys.path.append(os.path.join(os.path.dirname(__file__), "common/package"))
+# AP Vision common lib path.
+sys.path.append(os.path.join(os.path.dirname(__file__), "common/package/ap_vision"))
 # Camera calibration app path.
 sys.path.append(os.path.join(os.path.dirname(__file__), "calibration"))
 

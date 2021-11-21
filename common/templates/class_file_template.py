@@ -13,44 +13,45 @@
 
 
 class ClassTemplate:
-	"""
-	Type : ClassTemplate class.
-							Description.
-	"""
+    """
+    Type : ClassTemplate class.
+        Description.
+    """
 
-	# 	# Private global member variables.
-	G_CONST_VAR = None
-	G_VAR = None
+    # 	# Public global member variables.
+    G_CONST_VAR = None
+    G_VAR = None
 
-	# 	# Private global member variables.
-	__m_private_var = None
+    # 	# Private global member variables.
+    __m_private_var = None
 
-	# 	# Python member method overides.
-	def __init__(self):
-		self.__m_template_member_var = None
+    # 	# Python member method overides.
+    def __init__(self):
+        self.__m_template_member_var = None
 
-	#	# Public virtual member method overides.
+    # 	# Public virtual member method overides.
 
-	# 	# Public member methods.
-	def pub_member_func(self):
-		pass
+    # 	# Public member methods.
+    def pub_member_func(self):
+        pass
 
-	# 	# Static member methods.
-	def static_func():
-		pass
+    # 	# Static member methods.
+    @staticmethod
+    def static_func():
+        pass
 
-	# 	# Public setter and getter methods.
-	@property
-	def template_member_var(self):
-		return self.__m_template_member_var
+    # 	# Public setter and getter methods.
+    @property
+    def template_member_var(self):
+        return self.__m_template_member_var
 
-	@template_member_var.setter
-	def template_member_var(self, in_template_member_var):
-		self.__m_template_member_var = in_template_member_var
+    @template_member_var.setter
+    def template_member_var(self, in_template_member_var):
+        self.__m_template_member_var = in_template_member_var
 
-	# 	# Private member methods.
-	def __priv_member_func(self):
-		pass
+	#	# Private member methods.
+    def __priv_member_func(self):
+        pass
 
 
 # 	# References :
