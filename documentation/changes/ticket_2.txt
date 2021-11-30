@@ -1,0 +1,4 @@
+Had some time this week, hence decided to implement DLT from scratch.
+
+Changes : 
+	1. DLT implementation.

@@ -9,12 +9,26 @@ Section 1 : Introduction
 Section 2 : Requirements
 
     Software :
-    	Python 3.9
+    	Python 3.10.0
 
     Packages :
-    	opencv==4.5.3.56
-    	numpy==1.19.5
-    	plotly==5.3.1
+		black==21.11b1
+		click==8.0.3
+		colorama==0.4.4
+		mypy-extensions==0.4.3
+		numpy==1.21.4
+		opencv-python==4.5.4.60
+		pathspec==0.9.0
+		pip==21.3.1
+		platformdirs==2.4.0
+		plotly==5.4.0
+		regex==2021.11.10
+		setuptools==57.4.0
+		six==1.16.0
+		tenacity==8.0.1
+		tomli==1.2.2
+		typing_extensions==4.0.0
+		typish==1.9.3
 
 Section 3 : How-To Step by Step
 
@@ -36,6 +50,10 @@ Section 3 : How-To Step by Step
 Section 4 : App Documentations
 
     Commands :
+
+		*NEW* 0. [dlt] : 
+			Arguments : Path, Output.
+
     	1. [reconstruction] :
     		Arguments : Path, Stream, Calibration, Display Stream, Display Reconstruction.
 

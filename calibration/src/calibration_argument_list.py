@@ -21,7 +21,7 @@ class CalibrationArgumentList(ArgumentListInterface):
         super().__init__(
             [
                 PathArgument(
-                    os.path.join(in_config.project_path(), "./calibration/data/input/")
+                    os.path.join(in_config.project_path(), "./calibration/data/sample7x9/")
                 ),
                 DisplayStreamArgument(),
                 FileTypeArgument(),

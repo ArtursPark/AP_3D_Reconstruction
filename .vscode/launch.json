@@ -34,6 +34,14 @@
       "args": ["video_to_images"]
     },
     {
+      "name": "./main.py dlt",
+      "type": "python",
+      "request": "launch",
+      "program": "main.py",
+      "console": "externalTerminal",
+      "args": ["dlt"]
+    },
+    {
       "name": "Python: Current File",
       "type": "python",
       "request": "launch",
