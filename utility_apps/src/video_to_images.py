@@ -42,18 +42,18 @@ class VideoToImagesCommand():
 		video_stream_handle = video_stream.VideoStream(input_video_path)
 
 		if video_stream_handle is None:
-			print("ERROR : Could not open the video, to path = \"" + input_video_path + "\".")
+			print("Error : Could not open the video, to path = \"" + input_video_path + "\".")
 			return
 
 		if not os.path.exists(in_output):
-			print("WARNING : Path to output directory does not exist, creating the path = \"" + in_output + "\".")
+			print("Warning : Path to output directory does not exist, creating the path = \"" + in_output + "\".")
 			os.makedirs(in_output)
 		
 		count : int = 0
 		while True:
 			frame = video_stream_handle.read()
 			if frame is None:
-				print("STATUS : Frame could not be read, exiting.")
+				print("Status : Frame could not be read, exiting.")
 				break
 
 			path = os.path.join(in_output, in_file_name + str(count) + "." + in_file_type)

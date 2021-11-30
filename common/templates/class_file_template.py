@@ -29,12 +29,15 @@ class ClassTemplate:
     def __init__(self):
         self.__m_template_member_var = None
 
-    # 	# Public virtual member method overides.
 
     # 	# Public member methods.
     def pub_member_func(self):
         pass
 
+	#	# Public virtual member methods.
+
+    # 	# Public virtual member method overides.
+    
     # 	# Static member methods.
     @staticmethod
     def static_func():

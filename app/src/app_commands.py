@@ -1,6 +1,7 @@
+from utility_apps.src.dlt import DirectLinearTransformCommand
+from utility_apps.src.video_to_images import VideoToImagesCommand
 from calibration.src.calibration_command import CalibrationCommand
 from reconstruction.src.reconstruction_command import ReconstructionCommand
-from utility_apps.src.video_to_images import VideoToImagesCommand
 
 
 class AppCommands:
@@ -19,6 +20,9 @@ class AppCommands:
         getattr(self, in_command)()
 
     # 	# Public member methods.
+    def dlt(self):
+        DirectLinearTransformCommand.main(self.__m_config, self.__m_argv[2:])
+        
     def video_to_images(self):
         VideoToImagesCommand.main(self.__m_config, self.__m_argv[2:])
 
