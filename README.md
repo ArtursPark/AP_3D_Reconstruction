@@ -12,23 +12,24 @@ Section 2 : Requirements
     	Python 3.10.0
 
     Packages :
-		black==21.11b1
-		click==8.0.3
-		colorama==0.4.4
-		mypy-extensions==0.4.3
-		numpy==1.21.4
-		opencv-python==4.5.4.60
-		pathspec==0.9.0
-		pip==21.3.1
-		platformdirs==2.4.0
-		plotly==5.4.0
-		regex==2021.11.10
-		setuptools==57.4.0
-		six==1.16.0
-		tenacity==8.0.1
-		tomli==1.2.2
-		typing_extensions==4.0.0
-		typish==1.9.3
+    	*NEW*scipy==1.7.3
+    	black==21.11b1
+    	click==8.0.3
+    	colorama==0.4.4
+    	mypy-extensions==0.4.3
+    	numpy==1.21.4
+    	opencv-python==4.5.4.60
+    	pathspec==0.9.0
+    	pip==21.3.1
+    	platformdirs==2.4.0
+    	plotly==5.4.0
+    	regex==2021.11.10
+    	setuptools==57.4.0
+    	six==1.16.0
+    	tenacity==8.0.1
+    	tomli==1.2.2
+    	typing_extensions==4.0.0
+    	typish==1.9.3
 
 Section 3 : How-To Step by Step
 
@@ -40,19 +41,19 @@ Section 3 : How-To Step by Step
     	ii : Take a few images of the chessboard from various angles.
     	iii : Run the calibration app to obtain a file containing intrinsic matrix and distortion coefficients.
 
-		"python path/to/repo/AP_3D_Reconstruction/ calibrate"
+    	"python path/to/repo/AP_3D_Reconstruction/ calibrate"
 
     Step 2 : Perform 3D reconstruction.
     	i : Run the reconstruction against the input stream, plus calibration data obtained from the previous step.
-		
-		"python path/to/repo/AP_3D_Reconstruction/ reconstruction -stream IMAGE -path data/input/sample_images -d -k "
+
+    	"python path/to/repo/AP_3D_Reconstruction/ reconstruction -stream IMAGE -path data/input/sample_images -d -k "
 
 Section 4 : App Documentations
 
     Commands :
 
-		*NEW* 0. [dlt] : 
-			Arguments : Path, Output.
+    	*NEW* 0. [dlt] :
+    		Arguments : Path, Output.
 
     	1. [reconstruction] :
     		Arguments : Path, Stream, Calibration, Display Stream, Display Reconstruction.
@@ -129,9 +130,9 @@ Section 5 : Computer Vision Topic Documentations
 Section 6 : TODO Items
 
     This is a list of todo items to keep track of, as well as add anything I can think of, hence its a long list.
-    	
-		"git/documentation/TODO_List.txt"
-		"git/documentation/changes/ticket_*.txt"
+
+    	"git/documentation/TODO_List.txt"
+    	"git/documentation/changes/ticket_*.txt"
 
 Section 7 : References
 

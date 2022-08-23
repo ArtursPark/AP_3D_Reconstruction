@@ -1,16 +1,14 @@
-
 class InputStreamInterface:
-	"""
-		Interface : InputStreamInterface class.
+    """
+    Interface : InputStreamInterface class.
 
-		Virtual methods :
-			read()
-			close()
-	"""
+    Virtual methods :
+            read()
+            close()
+    """
 
-	def read(self):
-		raise NotImplementedError("InputStreamInterface::read()")
+    def read(self):
+        raise NotImplementedError("InputStreamInterface::read()")
 
-	def close(self):
-		raise NotImplementedError("InputStreamInterface::close()")
-	
+    def close(self):
+        raise NotImplementedError("InputStreamInterface::close()")

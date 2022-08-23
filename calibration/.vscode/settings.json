@@ -1,6 +1,4 @@
 {
-    "cSpell.words": [
-        "Zhang's"
-    ],
-    "python.formatting.provider": "black"
+	"cSpell.words": ["Zhang's"],
+	"python.formatting.provider": "black"
 }

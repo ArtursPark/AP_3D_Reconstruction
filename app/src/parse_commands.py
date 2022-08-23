@@ -3,10 +3,11 @@ from app.src import app_commands
 
 import argparse
 
+
 class ParseCommands:
     """
-	ParseCommands class.
-	"""
+    ParseCommands class.
+    """
 
     #   # Private global member variables.
     __m_command_parser = None
@@ -25,7 +26,7 @@ class ParseCommands:
             "command", default="default", help="Command to execute."
         )
 
-	#	# Public member methods.
+    # 	# Public member methods.
     def parse_commands(self, in_command):
         parsed_command = self.__m_command_parser.parse_args(in_command)
         if not hasattr(app_commands.AppCommands, parsed_command.command):

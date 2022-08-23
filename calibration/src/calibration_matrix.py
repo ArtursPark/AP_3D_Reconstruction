@@ -1,9 +1,9 @@
 class CalibrationMatrix:
     """
-	CalibrationMatrix class.
-	"""
+    CalibrationMatrix class.
+    """
 
-	#	# Constructor method.
+    # 	# Constructor method.
     def __init__(self, in_calibration_matrix=None):
         self.__m_calibration_matrix = in_calibration_matrix
 

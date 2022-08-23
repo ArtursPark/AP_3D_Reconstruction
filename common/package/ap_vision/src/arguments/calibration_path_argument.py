@@ -4,7 +4,7 @@ import os
 
 
 class CalibrationPathArgument(ArgumentInterface):
-    
+
     # 	# Public global member variables.
     G_CONST_HELP = "Path to calibration data."
 

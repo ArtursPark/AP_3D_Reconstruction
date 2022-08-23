@@ -1,5 +1,6 @@
 from src.arguments.argument_interface import ArgumentInterface
 
+
 class FileTypeArgument(ArgumentInterface):
     # 	# Public global member variables.
     G_CONST_HELP = """File type extension/suffix."""

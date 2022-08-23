@@ -4,7 +4,7 @@ import argparse
 
 
 class DisplayReconstructionArgument(ArgumentInterface):
-    
+
     # 	# Public global member variables.
     G_CONST_HELP = (
         "Add the argument to display 3D reconstruction plot. This is false by default."

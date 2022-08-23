@@ -1,61 +1,55 @@
-from input_stream.src.input_stream_interface import InputStreamInterface
+from typing import Tuple
 from features.src.feature_detection import FeatureDetector
 from features.src.feature_matching import FeatureMatcher
-from calibration.src import calibration
+
 from pose.src.essential_matrix import EssentialMatrix
-from triangulation.src.triangulation import Triangulate
+from triangulation.src.triangulation import Triangulator
+from optimization.src.optimizer_producer_interface import BundleAdjustmentProducer
 from optimization.src import bundle_adjustment
 
 from ap_vision.src.data import frame_data as ap_frame_data
+from ap_vision.src.data import stream_data as ap_stream_data
 from ap_vision.src.visualize import visualize_frame
+from ap_vision.src.data.projection_matrix import ProjectionMatrix
 
 import cv2
 import numpy
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+from scipy.optimize import least_squares
 
 
 class Reconstruction:
 	"""
 	Reconstruction class.
- 	"""
+	"""
 
 	S_FRAME_WINDOW = visualize_frame.ViewFrame("REGULAR")
 
 	def __init__(
 		self,
-		in_input_stream: InputStreamInterface,
-		in_calibration_data_path: str,
+		in_stream_data: ap_stream_data.StreamData,
 		in_is_display_stream: bool = False,
 		in_is_display_reconstruction: bool = False,
 	):
-		self.__m_data: ap_frame_data.FrameDataList = ap_frame_data.FrameDataList()
-		self.__m_input_stream: InputStreamInterface = in_input_stream
+		self.__m_stream_data: ap_stream_data.StreamData = in_stream_data
+		self.__m_frame_count = 0
 
-		# Camera Calibration.
-		(
-			self.__m_calibration_matrix,
-			self.__m_distortion_coefficients,
-		) = calibration.Calibration.load_calibration(in_calibration_data_path)
-		if self.__m_calibration_matrix is None:
-			print("Error : Calibration matrix is empty from path = \"" + in_calibration_data_path + "\" , existing...")
-			exit()
-		if self.__m_distortion_coefficients is None:
-			print("Error : Distortion coefficients are empty from path = \"" + in_calibration_data_path + "\" , existing...")
-			exit()
+		self.__m_data: ap_frame_data.FrameDataList = ap_frame_data.FrameDataList()
 
 		self.__m_is_display_stream: bool = in_is_display_stream
 		self.__m_is_display_reconstruction: bool = in_is_display_reconstruction
 
 		self.__m_feature_detector: FeatureDetector = FeatureDetector()
 		self.__m_feature_matcher: FeatureMatcher = FeatureMatcher()
-		self.__m_triangulate: Triangulate = Triangulate()
+		self.__m_triangulator: Triangulator = Triangulator()
 
 	def process_frame(self, in_frame):
 		proc_frame = in_frame
 		return proc_frame
 
 	def read_frame(self):
-		f = self.input_stream.read()
+		f = self.stream_data.stream_handle.read()
 		if f is None or numpy.sum(f) == 0:
 			return None
 		return self.process_frame(f)
@@ -65,141 +59,152 @@ class Reconstruction:
 		self.data = ap_frame_data.FrameDataList()
 
 		# Prepare the starting frame.
-		prev_frame = self.read_frame()
-		if prev_frame is None:
-			return None
-		prev_projection_matrix = numpy.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
+		frame_data = ap_frame_data.FrameData()
 
-		camera_count = 0
+		frame_data.frame = self.read_frame()
+		if frame_data.frame is None:
+			return None
+
+		frame_data.stream_id = self.stream_data.stream_id
+		frame_data.projection_matrix = ProjectionMatrix()
+		frame_data.projection_matrix.compose(
+			self.stream_data.calibration_matrix,
+			numpy.eye(3),
+			numpy.zeros((3, 1)),
+		)
+		(
+			frame_data.feature_points,
+			frame_data.descriptors,
+		) = self.feature_detector.compute(
+			cv2.cvtColor(frame_data.frame, cv2.COLOR_BGR2GRAY)
+		)
+		self.data.append_frame(frame_data)
 
 		# Start the loop and process each frame while collecting the data.
 		while True:
 
-			# Set up this loops data struct.
-			frame_data = ap_frame_data.FrameData()
+			# Set up this loops previous and current frame data.
+			previous_frame_data = self.data.frame_data_list[
+				-1
+			]  # Get recent frame data.
+			current_frame_data = ap_frame_data.FrameData()
 
 			# Read and save frame.
-			frame_data.frame = self.read_frame()
-			if frame_data.frame is None:
+			current_frame_data.frame = self.read_frame()
+			if current_frame_data.frame is None:
 				break
+			current_frame_data.stream_id = self.stream_data.stream_id
 
-			# Save camera info.
-			frame_data.camera_number = camera_count
-			frame_data.calibration_matrix = self.calibration_matrix
-			frame_data.distortion_coefficients = self.distortion_coefficients
-
-			# Compute feature points.
-			# TODO : There is not need to get previous points again. Work around this.
-			(prev_feature_points, prev_descriptors,) = self.feature_detector.compute(
-				cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
-			)
-			(feature_points, descriptors,) = self.feature_detector.compute(
-				cv2.cvtColor(frame_data.frame, cv2.COLOR_BGR2GRAY)
+			# Compute and save feature points.
+			(
+				current_frame_data.feature_points,
+				current_frame_data.descriptors,
+			) = self.feature_detector.compute(
+				cv2.cvtColor(current_frame_data.frame, cv2.COLOR_BGR2GRAY)
 			)
 
-			# Save feature points and descriptors
-			frame_data.feature_points = feature_points
-			frame_data.descriptors = descriptors
-
-			# Compute feature matching.
-			feature_matches = self.feature_matcher.compute(
-				prev_descriptors,
-				descriptors,
+			# Compute and save feature matching.
+			current_frame_data.feature_matches = self.feature_matcher.compute(
+				previous_frame_data.descriptors,
+				current_frame_data.descriptors,
 			)
 
-			# Save feature matches.
-			frame_data.feature_matches = feature_matches
-
-			# Compute point lists and apply ratio.trainIdx
+			# Compute point lists and apply Lowe's ratio test
 			prev_points = list()
-			points_2d = list()
-			for feature_match_m, feature_match_n in feature_matches:
+			current_frame_data.image_points = list()
+			current_feature_matches = list()
+			feature_count = 0
+			for feature_match_m, feature_match_n in current_frame_data.feature_matches:
 				if feature_match_m.distance / feature_match_n.distance < 0.75:
-					prev_points.append(prev_feature_points[feature_match_m.queryIdx].pt)
-					points_2d.append(feature_points[feature_match_m.trainIdx].pt)
+					prev_points.append(
+						previous_frame_data.feature_points[feature_match_m.queryIdx].pt
+					)
+					current_frame_data.image_points.append(
+						current_frame_data.feature_points[feature_match_m.trainIdx].pt
+					)
+					current_feature_matches.append((feature_count, feature_count))
+					feature_count += 1
+			current_frame_data.feature_matches = numpy.array(current_feature_matches)
+
 			prev_points = numpy.array(prev_points)
-			points_2d = numpy.array(points_2d)
+			current_frame_data.image_points = numpy.array(
+				current_frame_data.image_points
+			)
 
 			# Compute essential matrix.
 			(essential_matrix, mask) = EssentialMatrix.compute(
 				prev_points,
-				points_2d,
-				self.calibration_matrix,
+				current_frame_data.image_points,
+				self.stream_data.calibration_matrix,
 			)
 
 			# Remove outliers, using mask.
-			prev_points = prev_points[mask.ravel() == 1]
-			points_2d = points_2d[mask.ravel() == 1]
+			# prev_points = prev_points[mask.ravel() == 1]
+			# current_frame_data.image_points = current_frame_data.image_points[mask.ravel() == 1]
 
-			# Compute pose, rotation and translation.
+			# Compute and save, pose / rotation and translation.
 			# cv2.recoverPose() already does cheirality check.
 			# The cheirality check means that the triangulated
 			# 3D points should have positive depth. That is
 			# based on the documentation. However, in practice
 			# I have been getting a negative Z point values.
+			# TODO : Investigate.
 			(
-				points,
-				rotation_matrix,
-				translation_matrix,
+				_,
+				current_frame_data.rotation_matrix,
+				current_frame_data.translation_matrix,
 				mask,
-			) = cv2.recoverPose(essential_matrix, prev_points, points_2d)
-
-			# Save rotation and translation matrices.
-			frame_data.rotation_matrix = rotation_matrix
-			frame_data.translation_matrix = translation_matrix
+			) = cv2.recoverPose(
+				essential_matrix, prev_points, current_frame_data.image_points
+			)
 
 			# Remove outliers, using mask.
-			prev_points = prev_points[mask.ravel() == 255]
-			points_2d = points_2d[mask.ravel() == 255]
+			# prev_points = prev_points[mask.ravel() == 255]
+			# current_frame_data.image_points = current_frame_data.image_points[mask.ravel() == 255]
 
 			# Compute undistorted points for triangulation.
 			undistorted_previous_points = prev_points
 			undistorted_previous_points = cv2.undistortPoints(
 				prev_points,
-				self.calibration_matrix,
-				self.distortion_coefficients,
+				self.stream_data.calibration_matrix,
+				self.stream_data.distortion_coefficients,
 			)
 
-			undistorted_current_points = points_2d
+			undistorted_current_points = current_frame_data.image_points
 			undistorted_current_points = cv2.undistortPoints(
-				points_2d,
-				self.calibration_matrix,
-				self.distortion_coefficients,
+				current_frame_data.image_points,
+				self.stream_data.calibration_matrix,
+				self.stream_data.distortion_coefficients,
 			)
 
-			# Compute projection matrices.
-			curr_projection_matrix = cv2.hconcat([rotation_matrix, translation_matrix])
-
-			projection_matrix_1 = prev_projection_matrix
-			projection_matrix_1 = numpy.dot(
-				self.calibration_matrix, prev_projection_matrix
+			# Compute and save projection matrices.
+			# TODO : Using an identity matrix for projection matrix and computing triangulation, leads to a lower re-projection error. Investigate why that is the case.
+			current_frame_data.projection_matrix = ProjectionMatrix()
+			current_frame_data.projection_matrix.compose(
+				numpy.eye(3, 3),
+				current_frame_data.rotation_matrix,
+				current_frame_data.translation_matrix,
 			)
-			projection_matrix_2 = curr_projection_matrix
-			projection_matrix_2 = numpy.dot(
-				self.calibration_matrix, curr_projection_matrix
-			)
-
-			# Save projection matrix.
-			frame_data.projection_matrix = curr_projection_matrix
 
 			# Compute point triangulation.
-			points_4d = self.triangulate.compute(
-				projection_matrix_1,
-				projection_matrix_2,
+			current_frame_data.homogeneous_object_points = self.triangulator.compute(
+				previous_frame_data.projection_matrix.data,
+				current_frame_data.projection_matrix.data,
 				undistorted_previous_points,
 				undistorted_current_points,
 			)
-			points_3d = points_4d.copy()
-			points_3d /= points_3d[3]
-			points_3d = points_3d[:3, :]
+			current_frame_data.euclidean_object_points = (
+				current_frame_data.homogeneous_object_points.copy()
+			)
+			current_frame_data.euclidean_object_points /= (
+				current_frame_data.euclidean_object_points[3]
+			)
+			current_frame_data.euclidean_object_points = (
+				current_frame_data.euclidean_object_points[:3, :]
+			)
 
 			# TODO : Remove outliers.
-			filtered_3d_points = points_3d
-
-			# Save 4D homogeneous, 3D, and 2D points.
-			frame_data.image_points = points_2d
-			frame_data.homogeneous_points = points_4d
-			frame_data.euclidean_points = points_3d
+			filtered_3d_points = current_frame_data.euclidean_object_points
 
 			# Show triangulation points.
 			if self.is_display_reconstruction:
@@ -221,42 +226,66 @@ class Reconstruction:
 				fig.show()
 
 			# View single compute data
-			Reconstruction.S_FRAME_WINDOW.view(frame_data.frame)
+			Reconstruction.S_FRAME_WINDOW.view(current_frame_data.frame)
 
-			# Compute re-projection points.
-			rotation_vector, _ = cv2.Rodrigues(rotation_matrix)
-			re_projection_points, _ = cv2.projectPoints(
-				points_3d,
-				rotation_vector,
-				translation_matrix,
-				self.calibration_matrix,
-				self.distortion_coefficients,
+			# TODO : Compute re-projection points. This is mainly required for BA.
+			current_frame_data.re_projection_points = (
+				bundle_adjustment.re_projection_points(
+					current_frame_data, self.stream_data
+				)
 			)
 
-			# Save re-projected points.
-			frame_data.re_projection_points = re_projection_points[:, 0, :]
+			if self.__m_frame_count > 0:
+				# TODO : Perform local bundle adjustment.
+				# Compute local bundle adjustment.
+				ba_local_data = BundleAdjustmentProducer().produce_local(
+					previous_frame_data, current_frame_data
+				)
+				re_projection_points = (
+					current_frame_data.re_projection_points[:, 0, :]
+					- current_frame_data.image_points
+				)
+				re_projection_error = bundle_adjustment.compute_residual_error(
+					current_frame_data.image_points, re_projection_points
+				)
+				plt.plot(re_projection_error)
+				# plt.show()
+				plt.clf()
 
-			# Append everything
-			self.data.append_euclidean_points(frame_data.euclidean_points)
-			self.data.append_image_points(frame_data.image_points.T)
+				SBA_J = bundle_adjustment.build_local_bundle_adjustment_jacobian(
+					current_frame_data, ba_local_data
+				)
 
-			# TODO : Perform local bundle adjustment.
-			# Compute local bundle adjustment.
+				parameters = BundleAdjustmentProducer().produce_paramater_array(
+					self.stream_data, previous_frame_data, current_frame_data, SBA_J.point_list
+				)
 
-			# Save frame data.
-			self.data.append(frame_data)
+				res = least_squares(
+					bundle_adjustment.calc_fun,
+					parameters,
+					jac_sparsity=SBA_J,
+					verbose=2,
+					x_scale="jac",
+					ftol=1e-4,
+					method="trf",
+					args=(SBA_J),
+				)
+				plt.plot(res.fun)
+				plt.show()
+				plt.clf()
 
-			# Prepare info for the next loop.
-			prev_frame = frame_data.frame
-			prev_descriptors = descriptors
-			prev_projection_matrix = curr_projection_matrix
+			# Append current frame data.
+			self.data.append_frame(current_frame_data)
+			self.__m_frame_count += 1
 
 		# TODO : Perform global bundle adjustment.
 		# Compute global bundle adjustment.
+		ba_data = BundleAdjustmentProducer().produce(self.data)
 
 		return self.data
 
 	# 	# Public setter and getter methods.
+
 	@property
 	def _data(self):
 		return self.__m_data
@@ -266,12 +295,12 @@ class Reconstruction:
 		self.__m_data = in_value
 
 	@property
-	def input_stream(self):
-		return self.__m_input_stream
+	def stream_data(self):
+		return self.__m_stream_data
 
-	@input_stream.setter
-	def input_stream(self, in_value):
-		self.__m_input_stream = in_value
+	@stream_data.setter
+	def stream_data(self, in_value):
+		self.__m_stream_data = in_value
 
 	@property
 	def feature_detector(self):
@@ -290,12 +319,12 @@ class Reconstruction:
 		self.__m_feature_matcher = in_value
 
 	@property
-	def triangulate(self):
-		return self.__m_triangulate
+	def triangulator(self):
+		return self.__m_triangulator
 
-	@triangulate.setter
-	def triangulate(self, in_value):
-		self.__m_triangulate = in_value
+	@triangulator.setter
+	def triangulator(self, in_value):
+		self.__m_triangulator = in_value
 
 	@property
 	def is_display_stream(self):
@@ -312,19 +341,3 @@ class Reconstruction:
 	@is_display_reconstruction.setter
 	def is_display_reconstruction(self, in_value):
 		self.__m_is_display_reconstruction = in_value
-
-	@property
-	def calibration_matrix(self):
-		return self.__m_calibration_matrix
-
-	@calibration_matrix.setter
-	def calibration_matrix(self, in_value):
-		self.__m_calibration_matrix = in_value
-
-	@property
-	def distortion_coefficients(self):
-		return self.__m_distortion_coefficients
-
-	@distortion_coefficients.setter
-	def distortion_coefficients(self, in_value):
-		self.__m_distortion_coefficients = in_value

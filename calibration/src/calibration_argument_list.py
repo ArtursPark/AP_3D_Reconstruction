@@ -15,19 +15,25 @@ import os
 
 
 class CalibrationArgumentList(ArgumentListInterface):
-    
+
     # 	# Python member method overides.
     def __init__(self, in_config):
         super().__init__(
             [
                 PathArgument(
-                    os.path.join(in_config.project_path(), "./calibration/data/sample7x9/")
+                    os.path.join(
+                        in_config.project_path(), "./calibration/data/sample7x9/"
+                    )
                 ),
                 DisplayStreamArgument(),
                 FileTypeArgument(),
                 SquareSizeArgument(),
                 RowsArgument(),
                 ColumnsArgument(),
-                OutputArgument(os.path.join(in_config.project_path(), "./calibration/data/output/output.txt")),
+                OutputArgument(
+                    os.path.join(
+                        in_config.project_path(), "./calibration/data/output/output.txt"
+                    )
+                ),
             ]
         )

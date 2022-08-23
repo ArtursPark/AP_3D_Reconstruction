@@ -1,235 +1,186 @@
-import numpy
+from src.data.stream_data import StreamData
+
 
 class FrameData:
-	"""
-	Struct : FrameData class.
-		This will contain all frame data in uncalibrated format.
-	"""
+    """
+    Struct : FrameData class.
+                    This will contain all frame data in uncalibrated format.
+    """
 
-	def __init__(
-		self,
-		in_frame=None,
-		in_camera_number=None,
-		in_calibration_matrix=None,
-		in_distortion_coefficients=None,
-		in_feature_points=None,
-		in_descriptors=None,
-		in_feature_matches=None,
-		in_rotation_matrix=None,
-		in_translation_matrix=None,
-		in_projection_matrix=None,
-		in_image_points=None,
-		in_homogeneous_points=None,
-		in_euclidean_points = None,
-		in_re_projection_points=None,
-		in_point_observation_matching=None,
-	):
-		#   # Frame.
-		self.__m_frame = in_frame
+    def __init__(
+        self,
+        in_frame=None,
+        in_stream_id=None,
+        in_feature_points=None,
+        in_descriptors=None,
+        in_feature_matches=None,
+        in_rotation_matrix=None,
+        in_translation_matrix=None,
+        in_projection_matrix=None,
+        in_image_points=None,
+        in_homogeneous_object_points=None,
+        in_euclidean_object_points=None,
+        in_re_projection_points=None,
+    ):
+        #   # Frame.
+        self.__m_frame = in_frame
 
-		#   # Camera data.
-		self.__m_camera_number = in_camera_number
-		self.__m_calibration_matrix = in_calibration_matrix
-		self.__m_distortion_coefficients = in_distortion_coefficients
+        #   # Camera data.
+        self.__m_stream_id = in_stream_id
 
-		# 	# Feature data.
-		self.__m_feature_points = in_feature_points
-		self.__m_descriptors = in_descriptors
-		self.__m_feature_matches = in_feature_matches
+        # 	# Feature data.
+        self.__m_feature_points = in_feature_points
+        self.__m_descriptors = in_descriptors
+        self.__m_feature_matches = in_feature_matches
 
-		#   # Pose data.
-		self.__m_rotation_matrix = in_rotation_matrix
-		self.__m_translation_matrix = in_translation_matrix
-		self.__m_projection_matrix = in_projection_matrix
+        #   # Pose data.
+        self.__m_rotation_matrix = in_rotation_matrix
+        self.__m_translation_matrix = in_translation_matrix
+        self.__m_projection_matrix = in_projection_matrix
 
-		#   # Point data.
-		# Image, 2D points.
-		self.__m_image_points = in_image_points
-		# World object, 4D points.
-		self.__m_homogeneous_points = in_homogeneous_points
-		# World object, 3D points.
-		self.__m_euclidean_points = in_euclidean_points
-		# World object re-projected to image, 2D points.
-		self.__m_re_projection_points = in_re_projection_points
+        #   # Point data.
+        # Image, 2D points.
+        self.__m_image_points = in_image_points
+        # World object, 4D points.
+        self.__m_homogeneous_object_points = in_homogeneous_object_points
+        # World object, 3D points.
+        self.__m_euclidean_object_points = in_euclidean_object_points
+        self.__m_re_projection_points = in_re_projection_points
 
-		self.__m_point_observation_matching = in_point_observation_matching
+    # 	# Setters and getters.
+    # Frame.
+    @property
+    def frame(self):
+        return self.__m_frame
 
-	#   #   # Setters and getters.
-	# Frame.
-	@property
-	def frame(self):
-		return self.__m_frame
+    @frame.setter
+    def frame(self, in_value):
+        self.__m_frame = in_value
 
-	@frame.setter
-	def frame(self, in_value):
-		self.__m_frame = in_value
+    # Camera number.
+    @property
+    def stream_id(self):
+        return self.__m_stream_id
 
-	# Camera number.
-	@property
-	def camera_number(self):
-		return self.__m_camera_number
+    @stream_id.setter
+    def stream_id(self, in_value):
+        self.__m_stream_id = in_value
 
-	@camera_number.setter
-	def camera_number(self, in_value):
-		self.__m_camera_number = in_value
+    # Feature points.
+    @property
+    def feature_points(self):
+        return self.__m_feature_points
 
-	# Camera calibration/intrinsic matrix.
-	@property
-	def calibration_matrix(self):
-		return self.__m_calibration_matrix
+    @feature_points.setter
+    def feature_points(self, in_value):
+        self.__m_feature_points = in_value
 
-	@calibration_matrix.setter
-	def calibration_matrix(self, in_value):
-		self.__m_calibration_matrix = in_value
+    # Descriptors.
+    @property
+    def descriptors(self):
+        return self.__m_descriptors
 
-	# Distortion coefficients.
-	@property
-	def distortion_coefficients(self):
-		return self.__m_distortion_coefficients
+    @descriptors.setter
+    def descriptors(self, in_value):
+        self.__m_descriptors = in_value
 
-	@distortion_coefficients.setter
-	def distortion_coefficients(self, in_value):
-		self.__m_distortion_coefficients = in_value
+    # Feature matches.
+    @property
+    def feature_matches(self):
+        return self.__m_feature_matches
 
-	# Feature points.
-	@property
-	def feature_points(self):
-		return self.__m_feature_points
+    @feature_matches.setter
+    def feature_matches(self, in_value):
+        self.__m_feature_matches = in_value
 
-	@feature_points.setter
-	def feature_points(self, in_value):
-		self.__m_feature_points = in_value
+    # Rotation matrix.
+    @property
+    def rotation_matrix(self):
+        return self.__m_rotation_matrix
 
-	# Descriptors.
-	@property
-	def descriptors(self):
-		return self.__m_descriptors
+    @rotation_matrix.setter
+    def rotation_matrix(self, in_value):
+        self.__m_rotation_matrix = in_value
 
-	@descriptors.setter
-	def descriptors(self, in_value):
-		self.__m_descriptors = in_value
+    # Translation matrix.
+    @property
+    def translation_matrix(self):
+        return self.__m_translation_matrix
 
-	# Feature matches.
-	@property
-	def feature_matches(self):
-		return self.__m_feature_matches
+    @translation_matrix.setter
+    def translation_matrix(self, in_value):
+        self.__m_translation_matrix = in_value
 
-	@feature_matches.setter
-	def feature_matches(self, in_value):
-		self.__m_feature_matches = in_value
+    # Translation matrix.
+    @property
+    def projection_matrix(self):
+        return self.__m_projection_matrix
 
-	# Rotation matrix.
-	@property
-	def rotation_matrix(self):
-		return self.__m_rotation_matrix
+    @projection_matrix.setter
+    def projection_matrix(self, in_value):
+        self.__m_projection_matrix = in_value
 
-	@rotation_matrix.setter
-	def rotation_matrix(self, in_value):
-		self.__m_rotation_matrix = in_value
+    # Image points.
+    @property
+    def image_points(self):
+        return self.__m_image_points
 
-	# Translation matrix.
-	@property
-	def translation_matrix(self):
-		return self.__m_translation_matrix
+    @image_points.setter
+    def image_points(self, in_value):
+        self.__m_image_points = in_value
 
-	@translation_matrix.setter
-	def translation_matrix(self, in_value):
-		self.__m_translation_matrix = in_value
+    # Homogenous object points.
+    @property
+    def homogeneous_object_points(self):
+        return self.__m_homogeneous_object_points
 
-	# Translation matrix.
-	@property
-	def projection_matrix(self):
-		return self.__m_projection_matrix
+    @homogeneous_object_points.setter
+    def homogeneous_object_points(self, in_value):
+        self.__m_homogeneous_object_points = in_value
 
-	@projection_matrix.setter
-	def projection_matrix(self, in_value):
-		self.__m_projection_matrix = in_value
+    # Euclidean object points.
+    @property
+    def euclidean_object_points(self):
+        return self.__m_euclidean_object_points
 
-	# Image points.
-	@property
-	def image_points(self):
-		return self.__m_image_points
+    @euclidean_object_points.setter
+    def euclidean_object_points(self, in_value):
+        self.__m_euclidean_object_points = in_value
 
-	@image_points.setter
-	def image_points(self, in_value):
-		self.__m_image_points = in_value
+    # Re projected points.
+    @property
+    def re_projection_points(self):
+        return self.__m_re_projection_points
 
-	# Homogenous points.
-	@property
-	def homogeneous_points(self):
-		return self.__m_homogeneous_points
-
-	@homogeneous_points.setter
-	def homogeneous_points(self, in_value):
-		self.__m_homogeneous_points = in_value
-
-		self.__m_euclidean_points = (in_value / in_value[3])[:3, :]
-
-	# Euclidean points.
-	@property
-	def euclidean_points(self):
-		return self.__m_euclidean_points
-
-	@euclidean_points.setter
-	def euclidean_points(self, in_value):
-		self.__m_euclidean_points = in_value
-
-	# Re-projection points.
-	@property
-	def re_projection_points(self):
-		return self.__m_re_projection_points
-
-	@re_projection_points.setter
-	def re_projection_points(self, in_value):
-		self.__m_re_projection_points = in_value
+    @re_projection_points.setter
+    def re_projection_points(self, in_value):
+        self.__m_re_projection_points = in_value
 
 
 class FrameDataList:
-	def __init__(self):
-		self.__m_frame_data_list = list()
+    def __init__(self) -> None:
+        self.__m_frame_data_list = list()
+        self.__m_stream_data_list = list()
 
-		self.__m_calibration_matrix = None
-		self.__m_distrortion_coefficients = None
+    def append_frame(self, in_frame_data: FrameData):
+        self.__m_frame_data_list.append(in_frame_data)
 
-		self.__m_all_euclidean_points = None
-		self.__m_all_image_points = None
+    def append_stream(self, in_stream_data: StreamData):
+        self.__m_stream_data_list.append(in_stream_data)
 
-	def append(self, in_frame_data):
-		self.__m_frame_data_list.append(in_frame_data)
+    # 	# Setters and getters.
+    @property
+    def frame_data_list(self) -> list:
+        return self.__m_frame_data_list
 
-	def append_euclidean_points(self, in_points):
-		if self.__m_all_euclidean_points is None:
-			self.__m_all_euclidean_points = in_points
-		else:
-			self.__m_all_euclidean_points = numpy.hstack([self.__m_all_euclidean_points, in_points])
+    @frame_data_list.setter
+    def frame_data_list(self, in_value: list):
+        self.__m_frame_data_list = in_value
 
-	def append_image_points(self, in_points):
-		if self.__m_all_image_points is None:
-			self.__m_all_image_points = in_points
-		else:
-			self.__m_all_image_points = numpy.hstack([self.__m_all_image_points, in_points])
+    @property
+    def stream_data_list(self) -> list:
+        return self.__m_stream_data_list
 
-	# Setters and getters.
-	@property
-	def frame_data_list(self):
-		return self.__m_frame_data_list
-
-	@frame_data_list.setter
-	def frame_data_list(self, in_value):
-		self.__m_frame_data_list = in_value
-
-	@property
-	def intrinsic_matrix(self):
-		return self.__m_intrinsic_matrix
-
-	@intrinsic_matrix.setter
-	def intrinsic_matrix(self, in_value):
-		self.__m_intrinsic_matrix = in_value
-
-	@property
-	def distrortion_coefficients(self):
-		return self.__m_distrortion_coefficients
-
-	@distrortion_coefficients.setter
-	def distrortion_coefficients(self, in_value):
-		self.__m_distrortion_coefficients = in_value
+    @stream_data_list.setter
+    def stream_data_list(self, in_value: list):
+        self.__m_stream_data_list = in_value

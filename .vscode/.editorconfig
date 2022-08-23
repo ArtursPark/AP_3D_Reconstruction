@@ -1,0 +1,5 @@
+root = true
+
+[*] # extensions of the files
+indent_style = tab
+indent_size = 4

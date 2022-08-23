@@ -4,6 +4,7 @@
         "**/__pycache__": true
     },
     "cSpell.words": [
+		"cheirality",
 		"Cyrill",
 		"FLANN",
 		"Stachniss",
@@ -17,5 +18,10 @@
 	],
 	"files.associations": {
 		"*.txt": "plaintext"
-	}
+	},
+	"editor.insertSpaces": false,
+	"editor.tabSize": 4,
+	"editor.detectIndentation": false,
+	"editor.autoIndent":"none",
+	"prettier.useTabs": true
 }

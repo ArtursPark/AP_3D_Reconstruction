@@ -4,8 +4,8 @@ import cv2
 
 
 class CameraStream(input_stream_interface.InputStreamInterface):
-    
-	# 	# Python member method overides.
+
+    # 	# Python member method overides.
     def __init__(self):
         super().__init__()
         self.stream_handle = cv2.VideoCapture(0)

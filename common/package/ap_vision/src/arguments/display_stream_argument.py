@@ -4,7 +4,7 @@ import argparse
 
 
 class DisplayStreamArgument(ArgumentInterface):
-    
+
     # 	# Public global member variables.
     G_CONST_HELP = "Add the argument to display input stream. This is false by default."
 

@@ -1,6 +1,7 @@
 from reconstruction.src.reconstruction import Reconstruction
 from reconstruction.src.reconstruction_argument_list import ReconstructionArgumentList
 
+from input_stream.src.load_stream import LoadStream
 from input_stream.src.video_stream import VideoStream
 from input_stream.src.frame_stream import FrameStream
 from input_stream.src.camera_stream import CameraStream
@@ -31,8 +32,10 @@ class ReconstructionCommand:
         display_stream = arg_dict["display_stream"]
         display_reconstruction = arg_dict["display_reconstruction"]
 
+        stream_data = LoadStream.load(0, stream, calibration)
+
         reconstruction = Reconstruction(
-            stream, calibration, display_stream, display_reconstruction
+            stream_data, display_stream, display_reconstruction
         )
         reconstruction.compute()
 

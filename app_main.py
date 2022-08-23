@@ -1,6 +1,7 @@
 #   # Add current project modules.
 import sys, os
 
+# TODO : Remove the paths, and separate common into a separate utility repo.
 # Add common packages.
 sys.path.append(os.path.join(os.path.dirname(__file__), "common/package"))
 # AP Vision common lib path.

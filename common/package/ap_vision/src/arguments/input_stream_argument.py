@@ -2,11 +2,13 @@ from ap_vision.src.arguments.argument_interface import ArgumentInterface
 
 from enum import Enum
 
+
 class EnumInputStream(Enum):
     E_WRONG_STREAM = 0
     E_FRAME_STREAM = 1
     E_VIDEO_STREAM = 2
     E_CAMERA_STREAM = 3
+
 
 class InputStreamArgument(ArgumentInterface):
     # 	# Public global member variables.

@@ -7,7 +7,7 @@ class EnumTriangulateImplementations(Enum):
     E_OpenCV = 1
 
 
-class Triangulate:
+class Triangulator:
 
     # 	# Python member method overides.
     def __init__(
@@ -28,21 +28,21 @@ class Triangulate:
         in_current_points,
     ):
 
-        homogenous_points = None
-        homogenous_points = self.__m_triangulate_implementation(
+        homogenous_object_points = None
+        homogenous_object_points = self.__m_triangulate_implementation(
             in_previous_projection,
             in_current_projection,
             in_previous_points,
             in_current_points,
         )
 
-        if homogenous_points is None:
+        if homogenous_object_points is None:
             return None
 
-        if homogenous_points[0][0] != homogenous_points[0][0]:
+        if homogenous_object_points[0][0] != homogenous_object_points[0][0]:
             return None
 
-        return homogenous_points
+        return homogenous_object_points
 
     # 	# Private member methods.
     def __triangulate_OpenCV(
@@ -52,6 +52,19 @@ class Triangulate:
         in_previous_points,
         in_current_points,
     ):
+        """[summary]
+
+        * https://stackoverflow.com/questions/16295551/how-to-correctly-use-cvtriangulatepoints
+
+        Args:
+                in_previous_projection ([type]): [description]
+                in_current_projection ([type]): [description]
+                in_previous_points ([type]): [description]
+                in_current_points ([type]): [description]
+
+        Returns:
+                [type]: [description]
+        """
         return cv2.triangulatePoints(
             in_previous_projection,
             in_current_projection,

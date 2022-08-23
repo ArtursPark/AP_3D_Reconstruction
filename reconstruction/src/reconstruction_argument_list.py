@@ -11,8 +11,8 @@ from ap_vision.src.arguments.display_reconstruction_argument import (
 
 
 class ReconstructionArgumentList(ArgumentListInterface):
-    
-	# 	# Python member method overides.
+
+    # 	# Python member method overides.
     def __init__(self, in_config):
         super().__init__(
             [

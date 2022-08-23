@@ -15,14 +15,14 @@ class AppCommands:
         # Set up some private member variables.
         self.__m_argv = in_argv
         self.__m_config = in_config
-        
+
         # Run the command.
         getattr(self, in_command)()
 
     # 	# Public member methods.
     def dlt(self):
         DirectLinearTransformCommand.main(self.__m_config, self.__m_argv[2:])
-        
+
     def video_to_images(self):
         VideoToImagesCommand.main(self.__m_config, self.__m_argv[2:])
 
